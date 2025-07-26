@@ -79,9 +79,9 @@ Efficeient method:To automatically remove the container after it stops
 docker run -p 5000:5000 --rm my-node-app
 ```
 
-### Manage images and containers
+## Manage images and containers
 
-#### Create a Docker image with a tag
+### Create a Docker image with a tag
 
 Use the `-t` flag with `docker build` to name and tag your image:
 
@@ -103,7 +103,7 @@ You can also tag it for Docker Hub like:
 docker build -t username/my-node-app:v1 .
 ```
 
-#### List all images
+### List all images
 
 ```
 docker images
@@ -111,7 +111,7 @@ docker images
 
 ---
 
-#### Delete an image
+### Delete an image
 
 ```
 docker rmi <image-id or image-name>
@@ -119,7 +119,7 @@ docker rmi <image-id or image-name>
 
 > Use `docker images` to get the image ID or name.
 
-#### Delete all imgaes at once
+### Delete all imgaes at once
 
 ```
 docker image prune -a
@@ -127,7 +127,7 @@ docker image prune -a
 
 ---
 
-#### Create and run a container
+### Create and run a container
 
 Use `docker run` to create and start a container from an image:
 
@@ -144,19 +144,19 @@ docker run -p 5000:5000 --name my-container my-node-app:v1
 
 This command both **creates** and **runs** the container.
 
-#### List all containers (running only)
+### List all containers (running only)
 
 ```
 docker ps
 ```
 
-#### List all containers (including stopped)
+### List all containers (including stopped)
 
 ```
 docker ps -a
 ```
 
-#### Run (start) an existing (stopped) container
+### Run (start) an existing (stopped) container
 
 ```
 docker start <container-id or name>
@@ -164,37 +164,37 @@ docker start <container-id or name>
 
 > Use `docker ps -a` to find the ID or name of stopped containers.
 
-#### Stop a running container
+### Stop a running container
 
 ```
 docker stop <container-id or name>
 ```
 
-#### Delete a container
+### Delete a container
 
 ```
 docker rm <container-id or name>
 ```
 
-#### Force delete a running container
+### Force delete a running container
 
 ```
 docker rm -f <container-id or name>
 ```
 
-#### Delete all containers at once
+### Delete all containers at once
 
 ```
 docker container purne
 ```
 
-#### Attach or Deatach container
+### Attach or Deatach container
 
 - `docker run` runs the container in attached mode by default, to run in detached mode `docker run -d <image-name or image-id>`
 
 - `docker start` runs the container in detached mode by default, to run in attached mode `docker start -a <container-id or name>`
 
-### Docker Hub
+## Docker Hub
 
 Docker Hub is a **cloud-based Docker image registry** used to **store, share, and distribute** images.
 
@@ -212,13 +212,13 @@ docker login
 docker push apuemdad04/my-node-app:v1
 ```
 
-#### Pull the image from Docker Hub
+### Pull the image from Docker Hub
 
 ```
 docker pull apuemdad04/my-node-app:v1
 ```
 
-#### Run the image from Docker Hub
+### Run the image from Docker Hub
 
 ```
 docker run -p 5000:5000 apuemdad04/my-node-app:v1
