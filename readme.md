@@ -198,7 +198,7 @@ docker container purne
 
 Docker Hub is a **cloud-based Docker image registry** used to **store, share, and distribute** images.
 
-📤 Push an image to Docker Hub
+### Push an image to Docker Hub
 
 **Log in** (if not already):
 
