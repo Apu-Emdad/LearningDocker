@@ -4,6 +4,10 @@
 
 [Cheat Sheet](https://find-saminravi99.notion.site/Docker-Cheat-Sheet-10dc48b8ac8c80b79f73ece2abfc6841)
 
+[Bind Mount, Dev Container & Ts Node Dev Cheat Sheet:](https://find-saminravi99.notion.site/Bind-Mount-Dev-Container-Ts-Node-Dev-Cheat-Sheet-117c48b8ac8c804aabb5ed0f09bc69a9?pvs=41)
+
+## Module 1
+
 ### Image
 
 A Docker **image** is a lightweight, standalone, and read-only package that contains everything needed to run a piece of software—code, runtime, libraries, and settings. You can think of it as a snapshot or blueprint.
@@ -88,8 +92,6 @@ Use the `-t` flag with `docker build` to name and tag your image:
 ```
 docker build -t my-node-app:v1 .
 ```
-
----
 
 **Breakdown:**
 
@@ -188,7 +190,7 @@ docker rm -f <container-id or name>
 docker container purne
 ```
 
-### Attach or Deatach container
+### Attach or Detach container
 
 - `docker run` runs the container in attached mode by default, to run in detached mode `docker run -d <image-name or image-id>`
 
