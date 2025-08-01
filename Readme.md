@@ -192,6 +192,12 @@ docker container purne
 
 ### Attach or Detach container
 
+**Attach Mode:**
+In attach mode, the container runs in the foreground, and your terminal is connected directly to the container’s input/output. You see live logs and can interact with it. Pressing `Ctrl+C` usually stops the container.
+
+**Detach Mode:**
+In detach mode, the container runs in the background. Your terminal is not connected to it, so you don’t see its output. The container keeps running until you manually stop it. Use `docker logs` or `docker attach` to view or interact later.
+
 - `docker run` runs the container in attached mode by default, to run in detached mode `docker run -d <image-name or image-id>`
 
 - `docker start` runs the container in detached mode by default, to run in attached mode `docker start -a <container-id or name>`
