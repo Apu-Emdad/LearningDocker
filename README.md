@@ -137,6 +137,12 @@ Use `docker run` to create and start a container from an image:
 docker run -p 5000:5000 --name my-container my-node-app:v1
 ```
 
+**Generic command:**
+
+```
+docker run -p <host-port>:<container-port> --rm -it --name <container-name> <image-name>:<tag>
+```
+
 **Breakdown:**
 
 - `-p 5000:5000` → Maps host port 5000 to container port 5000
@@ -187,7 +193,7 @@ docker rm -f <container-id or name>
 ### Delete all containers at once
 
 ```
-docker container purne
+docker container prune
 ```
 
 ### Attach or Detach container
@@ -217,19 +223,19 @@ docker login
 **Push the image**:
 
 ```
-docker push apuemdad04/my-node-app:v1
+docker push <username>/<repository>:<tag>
 ```
 
 ### Pull the image from Docker Hub
 
 ```
-docker pull apuemdad04/my-node-app:v1
+docker pull <username>/<repository>:<tag>
 ```
 
 ### Run the image from Docker Hub
 
 ```
-docker run -p 5000:5000 apuemdad04/my-node-app:v1
+docker run -p <host_port>:<container_port> <username>/<repository>:<tag>
 ```
 
 > Docker will **automatically pull the image** if it’s not available locally.
