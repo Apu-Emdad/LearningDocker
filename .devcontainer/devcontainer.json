@@ -4,7 +4,7 @@
   "workspaceFolder": "/app",
   "mounts": [
     // Bind mount for your local project
-    "source=/c/Projects/next-level/Docker/docker-with-typescipt-backend,target=/app,type=bind",
+    "source=/home/emdad/code/personal/LearningDocker,target=/app,type=bind",
 
     // Named volume for logs (similar to: -v ts-docker-logs://app/logs)
     "source=ts-docker-logs,target=/app/logs,type=volume",

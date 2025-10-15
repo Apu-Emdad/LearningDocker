@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Server } from "http";
 import app from "./app";
 import { errorlogger, logger } from "./app/src/shared/logger";

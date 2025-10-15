@@ -239,3 +239,103 @@ docker run -p <host_port>:<container_port> <username>/<repository>:<tag>
 ```
 
 > Docker will **automatically pull the image** if it’s not available locally.
+
+## Volume
+
+A Docker volume is **a storage location** used to **save data outside a container’s filesystem**, so the data **persists even if the container is deleted or recreated**.
+To create a **named volume**:
+
+```
+docker volume create my_volume
+```
+
+To use it in a container:
+
+```
+docker run -v my_volume:/app/data my_image
+```
+
+If `my_volume` doesn’t already exist, Docker will **automatically create it** when you run that command.
+
+To remove a volume:
+
+```
+docker volume rm my_volume
+```
+
+To remove all unused volumes:
+
+```
+docker volume prune
+```
+
+## Bind Volume
+
+A **bind volume** (or **bind mount**) directly connects a **host machine folder** to a **container folder**.
+
+Example:
+
+```
+docker run -v /host/path:/container/path my_image
+```
+
+Changes made in either location instantly appear in the other. It’s useful for **development** or **sharing files** between host and container.
+
+**Syntax**
+
+```
+docker run -p 5000:5000 --name ts-container -w //app -v ts-docker-logs://app/logs -v "//$(pwd)"://app/ -v //app/node_modules --rm ts-docker
+```
+
+Here’s the breakdown of your command:
+
+```
+docker run \
+  -p 5000:5000 \                     # Maps host port 5000 to container port 5000
+  --name ts-container \              # Names the container "ts-container"
+  -w //app \                         # Sets the working directory inside container to /app
+  -v ts-docker-logs://app/logs \     # Mounts a named volume "ts-docker-logs" to /app/logs
+  -v "//$(pwd)"://app/ \             # Mounts the current host directory to /app inside container
+  -v //app/node_modules \            # Creates an anonymous volume for /app/node_modules (so host files don’t overwrite it)
+  --rm \                             # Automatically removes container when it stops
+  ts-docker                          # Image name to run
+```
+
+**Brief Esxplanation:**
+Let me explain those parts more clearly:
+
+1. **`-w //app`**
+
+   - `-w` sets the **working directory** inside the container.
+   - Here, it’s set to `/app` (note: `//app` is just Docker’s way of interpreting `/app` on Windows).
+   - This means any command you run inside the container will start from `/app`.
+
+2. **`-v ts-docker-logs://app/logs`**
+
+   - This is a **named volume**.
+   - Docker stores logs from `/app/logs` in a persistent volume called `ts-docker-logs`.
+   - Even if you delete the container, the logs stay in this volume.
+
+3. **`-v "//$(pwd)"://app/`**
+
+   - This is a **bind mount**.
+   - `$(pwd)` gets your **current host directory**.
+   - It is mounted to `/app` in the container, so **all your project files on the host are available inside the container**.
+   - Changes on the host immediately appear in the container and vice versa.
+
+4. **`-v //app/node_modules`**
+
+   - This creates an **anonymous volume** for `/app/node_modules`.
+   - Purpose: avoid overwriting `node_modules` installed inside the container with the host’s folder (which may be empty).
+   - Keeps container dependencies isolated.
+
+**note/ Rule of thumb**:
+step 2 and 4 will be excuted before step 3.
+
+> **Deeper (more specific) path wins, regardless of CLI order.**
+
+## Run container with env
+
+```bash
+docker run --name my-container --env-file ./myenv.env -d image_name:tag
+```
