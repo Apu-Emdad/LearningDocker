@@ -6,8 +6,6 @@
 
 [Bind Mount, Dev Container & Ts Node Dev Cheat Sheet:](https://find-saminravi99.notion.site/Bind-Mount-Dev-Container-Ts-Node-Dev-Cheat-Sheet-117c48b8ac8c804aabb5ed0f09bc69a9?pvs=41)
 
-## Module 1
-
 ### Image
 
 A Docker **image** is a lightweight, standalone, and read-only package that contains everything needed to run a piece of software—code, runtime, libraries, and settings. You can think of it as a snapshot or blueprint.

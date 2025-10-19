@@ -1,5 +1,5 @@
 {
-  "name": "ts-container",
+  "name": "learningDocker",
   "image": "node:20",
   "workspaceFolder": "/app",
   "mounts": [
