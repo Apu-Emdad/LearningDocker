@@ -267,7 +267,7 @@ To remove all unused volumes:
 docker volume prune
 ```
 
-## Bind Volume
+### Bind Volume
 
 A **bind volume** (or **bind mount**) directly connects a **host machine folder** to a **container folder**.
 
@@ -337,3 +337,214 @@ step 2 and 4 will be excuted before step 3.
 ```bash
 docker run --name my-container --env-file ./myenv.env -d image_name:tag
 ```
+
+## **Container Communication in Docker**
+
+Docker containers can communicate with each other in several ways depending on their network configuration. By default, containers launched on the same **user-defined bridge network** can communicate directly using their container names as hostnames. This allows services to discover each other without needing IP addresses.
+
+### Container to WWW communication
+
+---
+
+**1. Environment Variables (`.env`)**
+
+Since your database is hosted on MongoDB Atlas (cloud), you don’t need any Docker network linking — you’ll connect via the public connection string.
+
+Example `.env` file:
+
+```
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/mydb?retryWrites=true&w=majority
+PORT=3000
+NODE_ENV=production
+```
+
+> No internal container hostname is used here — just the Atlas URI.
+
+---
+
+**2. Docker Build & Run (Temporary Container)**
+
+Assuming your frontend’s `Dockerfile` is in the current directory:
+
+```bash
+docker build -t frontend-app .
+```
+
+Then run the container **temporarily** (it’ll be removed when stopped):
+
+```bash
+docker run --rm -d --name frontend --env-file .env -p 3000:3000 frontend-app
+```
+
+Explanation:
+
+- `--rm` → removes container when stopped
+- `--env-file .env` → loads your environment variables
+- `-p 3000:3000` → maps local port 3000 to container port 3000
+- `-d` → runs in detached mode
+
+---
+
+### Container to Local Host Communication
+
+---
+
+**1. Environment Variables (`.env`)**
+
+When the database runs on your **local machine** (host), the container cannot use `localhost` or `127.0.0.1` to connect — because that would refer to _itself_, not your host system.
+Instead, Docker provides a special hostname `host.docker.internal` (works on Windows, macOS, and Linux with recent Docker versions).
+
+Example `.env` file:
+
+```
+MONGO_URI=mongodb://host.docker.internal:27017/mydb
+PORT=3000
+NODE_ENV=development
+```
+
+> Use `host.docker.internal` to allow the container to reach services running on your local host.
+
+---
+
+**2. Docker Build & Run (Temporary Container)**
+
+Assuming your frontend’s `Dockerfile` is in the current directory:
+
+```bash
+docker build -t frontend-app .
+```
+
+Then run the container **temporarily** (it’ll be removed when stopped):
+
+```bash
+docker run --rm -d --name frontend --env-file .env -p 3000:3000 frontend-app
+```
+
+Explanation:
+
+- `--rm` → removes container when stopped
+- `--env-file .env` → loads your environment variables
+- `-p 3000:3000` → maps local port 3000 to container port 3000
+- `-d` → runs in detached mode
+
+---
+
+### Container to Container Communication (Docker
+
+Networks)
+
+---
+
+**1. Environment Variables (`.env`)**
+
+When two containers (e.g., frontend and MongoDB) are **not in the same Docker network**, they can’t resolve each other by container name. You must connect using the **IP address** of the target container.
+
+First, start the MongoDB container:
+
+```bash
+docker run --rm -d --name mongodb -p 27017:27017 mongo
+```
+
+You can get the MongoDB container’s IP with:
+
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mongodb
+```
+
+Then use that IP in your `.env` file.
+
+Example `.env` file:
+
+```
+MONGO_URI=mongodb://172.17.0.2:27017/mydb
+PORT=3000
+NODE_ENV=development
+```
+
+> The IP `172.17.0.2` is just an example. Replace it with the actual IP from `docker inspect`.
+
+---
+
+**2. Docker Build & Run (Temporary Containers)**
+
+Then build and run the frontend container, passing the `.env` file with the MongoDB container’s IP:
+
+```bash
+docker build -t frontend-app .
+```
+
+```bash
+docker run --rm -d --name frontend --env-file .env -p 3000:3000 frontend-app
+```
+
+---
+
+**Explanation:**
+
+- Both containers are running **on the default bridge network**, so they’re isolated by default.
+- Communication works **only via direct IP** since container names don’t resolve across networks.
+- IPs can **change** if containers restart, which is why this setup is **not recommended for production**.
+
+---
+
+### Container to Container Communication (Same Network)
+
+---
+
+**1. Create a User-Defined Network**
+
+When containers are on the same **user-defined bridge network**, they can communicate using **container names** as hostnames — no need to use IP addresses.
+
+Create a custom network:
+
+```bash
+docker network create app-network
+```
+
+---
+
+**2. Environment Variables (`.env`)**
+
+Now that both containers will share a network, you can refer to MongoDB directly by its **container name**:
+
+```
+MONGO_URI=mongodb://mongodb:27017/mydb
+PORT=3000
+NODE_ENV=development
+```
+
+> The hostname `mongodb` here matches the container name of your MongoDB service.
+
+---
+
+**3. Docker Build & Run (Temporary Containers)**
+
+Run the MongoDB container **on the same network**:
+
+```bash
+docker run --rm -d --name mongodb --network app-network mongo
+```
+
+Build your frontend image:
+
+```bash
+docker build -t frontend-app .
+```
+
+Then run the frontend container on the same network:
+
+```bash
+docker run --rm -d --name frontend --network app-network --env-file .env -p 3000:3000 frontend-app
+```
+
+---
+
+**Explanation:**
+
+- `--network app-network` → connects the container to the shared user-defined network
+- Containers in the same user-defined network can **resolve each other by name**
+- This is the **recommended** setup for container-to-container communication
+
+---
+
+This configuration ensures stable communication without relying on changing IPs, making it ideal for local development or multi-service Docker setups.
