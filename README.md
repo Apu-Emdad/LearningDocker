@@ -554,3 +554,174 @@ This configuration ensures stable communication without relying on changing IPs,
 ## Docker Utility Container Cheat Sheet
 
 [Docker Utility Container Cheat Sheet](https://find-saminravi99.notion.site/Docker-Utility-Container-Cheat-Sheet-12bc48b8ac8c80a9899bec65b81aa00b)
+
+## Docker Compose
+
+Here’s a **minimal folder structure** and sample `Dockerfile`s for your React frontend + Node backend + MongoDB setup.
+
+---
+
+### Folder Structure
+
+```
+project-root/
+│
+├─ frontend/
+│   ├─ Dockerfile
+│   ├─ package.json
+│   └─ src/
+│       └─ index.js
+│
+├─ backend/
+│   ├─ Dockerfile
+│   ├─ package.json
+│   └─ index.js
+│
+└─ docker-compose.yml
+```
+
+With this structure, your **docker-compose.yml** from before will work immediately.
+
+### **docker-compose.yml**
+
+Here’s a full **Docker Compose example** for a React frontend, Node backend, and MongoDB. Everything is connected and ready to run.
+
+```yaml
+version: "3.9"
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/mydb
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  mongodata:
+```
+
+### Explanation
+
+1. **frontend**
+
+   - React app built from `./frontend` folder.
+   - Runs on port `3000` (mapped to localhost:3000).
+   - Depends on `backend` (waits for backend container to start).
+
+2. **backend**
+
+   - Node.js app built from `./backend` folder.
+   - Runs on port `5000`.
+   - Environment variable `MONGO_URI` points to MongoDB using hostname `mongo` (service name).
+
+3. **mongo**
+
+   - Uses official MongoDB image.
+   - Data is persisted in a named volume `mongodata`.
+
+4. **volumes**
+
+   - `mongodata` persists database data across container restarts.
+
+Here are the essential Docker Compose commands for this setup:
+
+---
+
+### 1. **Build images (if using `build:`)**
+
+```bash
+docker compose build
+```
+
+- Builds all services that use a `build:` instruction in the `docker-compose.yml`.
+- If images already exist, you can force rebuild with:
+
+```bash
+docker compose build --no-cache
+```
+
+---
+
+### 2. **Start containers**
+
+```bash
+docker compose up
+```
+
+- Starts all services in the foreground (you see logs in terminal).
+- Press `Ctrl+C` to stop.
+
+If you want to run in the background (detached mode):
+
+```bash
+docker compose up -d
+```
+
+---
+
+### 3. **Stop containers**
+
+```bash
+docker compose down
+```
+
+- Stops and removes containers created by `docker compose up`.
+- Does **not remove volumes** by default (so MongoDB data persists).
+
+Remove containers **and volumes**:
+
+```bash
+docker compose down -v
+```
+
+---
+
+### 4. **View logs**
+
+```bash
+docker compose logs -f
+```
+
+- `-f` follows logs in real-time.
+- Add service name to filter:
+
+```bash
+docker compose logs -f backend
+```
+
+---
+
+### 5. **Check container status**
+
+```bash
+docker compose ps
+```
+
+- Shows which containers are running, ports, and state.
+
+---
+
+### 6. **Rebuild + restart (common during development)**
+
+```bash
+docker compose up --build -d
+```
+
+- Rebuilds images if code changed, then starts containers in detached mode.
